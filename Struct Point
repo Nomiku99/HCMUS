@@ -1,0 +1,9 @@
+struct Point {
+	int x, y, z;
+	bool operator<(const Point& b)const{
+		return std::tie(x, z, y) < std::tie(b.x, b.z, b.y);
+	}
+};
+bool cmp(Point a, Point b){
+  return a.x > b.x;
+}
