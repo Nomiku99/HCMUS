@@ -1,0 +1,115 @@
+#include<iostream>
+#include<string>
+#include<string.h>
+#include<algorithm>
+#include<cmath>
+#include<map>
+#include<cstdlib>
+#include<vector>
+#include<set>
+#include<deque>
+#include<queue>
+#include<math.h>
+#include<chrono>
+#include<list>
+#include<random>
+#include<bitset>
+//#include<assert.h>
+#include<ctime>
+//#include<cstdio>
+#include <unordered_map>
+using namespace std;
+#define fast_input() {ios_base::sync_with_stdio(false);cin.tie(NULL);cout.tie(NULL); }
+#define ll long long
+#define For(i,n) for (int(i) = 0; (i)< (int)(n); (i)++)
+#define For1(i,n) for (int(i) = 1; (i) <= (int)(n); (i)++)
+#define Forlr(i,l,r) for (int(i) = (int)(l); (i) <= (int)(r); (i)++)
+#define Forrl(i,r,l) for (int(i) = (int)(r); (i) >= (int)(l); (i)--)
+#define all(a) a.begin(), a.end() 
+#define pb push_back
+#define pp pop_back
+#define mp make_pair
+#define PI 3.14159265
+#define putno return cout <<"NO", 0;
+#define putyes return cout <<"YES", 0;
+#define MASK(i) (1LL<<(i))
+#define BIT(x,i) (((x)>>(i))&1)
+typedef pair<int, int> pii;
+typedef vector<int> vi;
+typedef vector<vector<int>> vii;
+typedef vector<ll> vl;
+typedef map<int, int> mii;
+const ll MOD = 1e9 + 7;
+const int N = 1e5 + 5;
+
+mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
+/*
+MIKUNO - 15/02/1999
+*/
+int n, m, k, cnt, rs;
+ll x, y;
+//	priority_queue <ll, vector<ll>, greater<ll> > q;
+struct Point {
+	int x, y;
+};
+bool cmpx(Point x, Point y) {
+	return x.x < y.x;
+}
+bool cmpy(Point x, Point y) {
+	return x.y < y.y;
+}
+int dist(Point x, Point y)
+{
+	return ((x.x - y.x) * (x.x - y.x) + (x.y - y.y) * (x.y - y.y));
+}
+int brute_force(Point P[], int n) {
+	int minn = 1e9;
+	For(i, n)
+		Forlr(j, i + 1, n - 1)
+	{
+		minn = min(minn, dist(P[i], P[j]));
+	}
+	return minn;
+}
+int sub_closest_across(Point P[], int n, int d) {
+	int minn = d;
+	sort(P, P + n, cmpy);
+	For(i, n)
+	{
+		for (int j = i + 1; j < n && (P[j].y - P[i].y)*(P[j].y - P[i].y) < minn; j++)
+		{
+			minn = min(minn, dist(P[i], P[j]));
+		}
+	}
+	return minn;
+}
+int closest(Point P[], int n) {
+	if (n <= 3) return brute_force(P, n);
+	int mid = n / 2;
+	int d = min(closest(P, mid), closest(P + mid, n - mid));
+	Point* scrip;
+	scrip = new Point[n];
+	int j = 0;
+	For(i, n)
+	{
+		if (abs(P[i].x - P[mid].x)* abs(P[i].x - P[mid].x) < d) scrip[j] = P[i], j++;
+	}
+
+	return min(sub_closest_across(scrip, j, d), d);
+}
+int main()
+{
+	cin >> n;
+	Point* P;
+	P = new Point[n];
+	For(i, n)
+	{
+		int x, y;
+		cin >> x >> y;
+		Point t;
+		t.x = x, t.y = y;
+		P[i] = t;
+	}
+	sort(P, P + n, cmpx);
+	cout << sqrt(closest(P, n));
+}
