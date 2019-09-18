@@ -1,3 +1,4 @@
+
 #include<iostream>
 #include<string>
 #include<string.h>
@@ -71,45 +72,61 @@ int brute_force(Point P[], int n) {
 	}
 	return minn;
 }
-int sub_closest_across(Point P[], int n, int d) {
+int sub_closest_across(Point scrip[], int n, int d) {
 	int minn = d;
-	sort(P, P + n, cmpy);
 	For(i, n)
 	{
-		for (int j = i + 1; j < n && (P[j].y - P[i].y)*(P[j].y - P[i].y) < minn; j++)
+		for (int j = i + 1; j < n && (scrip[j].y - scrip[i].y) * (scrip[j].y - scrip[i].y) < minn; j++)
 		{
-			minn = min(minn, dist(P[i], P[j]));
+			minn = min(minn, dist(scrip[i], scrip[j]));
 		}
 	}
 	return minn;
 }
-int closest(Point P[], int n) {
-	if (n <= 3) return brute_force(P, n);
+int closest(Point Px[],Point Py[], int n) {
+	if (n <= 3) return brute_force(Px, n);
 	int mid = n / 2;
-	int d = min(closest(P, mid), closest(P + mid, n - mid));
-	Point* scrip;
-	scrip = new Point[n];
+	int Px_mid = Px[mid].x;
+
+	Point* Pyl, * Pyr;
+	Pyl = new Point[mid + 1];
+	Pyr = new Point[n - mid - 1];
+	int li = 0, ri = 0;
+	For(i, n)
+		if (Py[i].x <= Px_mid)
+			Pyl[li++] = Py[i];
+		else
+			Pyr[ri++] = Py[i];
+
+	int d = min(closest(Px, Pyl, mid + 1), closest(Px + mid + 1, Pyr, n - mid - 1));
+
+	Point* strip;
+	strip = new Point[n];
 	int j = 0;
 	For(i, n)
 	{
-		if (abs(P[i].x - P[mid].x)* abs(P[i].x - P[mid].x) < d) scrip[j] = P[i], j++;
+		if (abs(Py[i].x - Px_mid) * abs(Py[i].x - Px_mid) < d) 
+			strip[j++] = Py[i];
 	}
 
-	return min(sub_closest_across(scrip, j, d), d);
+	return min(sub_closest_across(strip, j, d), d);
 }
 int main()
 {
 	cin >> n;
-	Point* P;
-	P = new Point[n];
+	Point* Px, *Py;
+	Px = new Point[n];
+	Py = new Point[n];
 	For(i, n)
 	{
 		int x, y;
 		cin >> x >> y;
 		Point t;
 		t.x = x, t.y = y;
-		P[i] = t;
+		Px[i] = t;
+		Py[i] = t;
 	}
-	sort(P, P + n, cmpx);
-	cout << sqrt(closest(P, n));
+	sort(Px, Px + n, cmpy);
+	sort(Py, Py + n, cmpx);
+	cout << sqrt(closest(Px, Py, n));
 }
